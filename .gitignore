@@ -1,0 +1,30 @@
+# Secrets & runtime config — NEVER commit
+.env
+*.env
+!.env.example
+
+# Runtime data volume (uploads, library, Adobe activation keys, job db)
+data/
+/data/
+
+# Adobe activation artifacts, if they ever land outside the volume
+*.acsm
+device.xml
+activation.xml
+devicesalt
+*.der
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
