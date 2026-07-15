@@ -28,3 +28,6 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+
+# SDD scratch (progress ledger)
+.superpowers/
