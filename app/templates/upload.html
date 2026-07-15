@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>acsm2kindle</title>
+<style>body{font-family:system-ui;max-width:640px;margin:3rem auto;padding:0 1rem}
+form{border:2px dashed #888;padding:2rem;border-radius:8px;text-align:center}
+a{display:inline-block;margin-top:1rem}</style></head>
+<body>
+<h1>Send a book to Kindle</h1>
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <p>Drop or choose an <code>.acsm</code> file.</p>
+  <input type="file" name="file" accept=".acsm" required>
+  <p><button type="submit">Convert &amp; send</button></p>
+</form>
+<a href="/library">View library &rarr;</a>
+</body></html>
