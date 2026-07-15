@@ -40,7 +40,13 @@ def _process_acsm(input_file, out_dir, config_dir, runner):
     work = tempfile.mkdtemp(prefix="acsm2kindle-")
     try:
         # 1. Fulfill + download the (still DRM'd) book into the work dir.
-        runner(["acsmdownloader", "-f", input_file, "-o", "book"],
+        # No -o/--output-file: when omitted, acsmdownloader names the file
+        # after the book's title and appends the correct .epub/.pdf
+        # extension itself (verified against libgourou 0.8.9 --help and
+        # source). Passing -o (as this used to) writes the literal given
+        # string with NO extension appended, which _newest() below would
+        # then fail to find.
+        runner(["acsmdownloader", "-f", input_file],
                cwd=work, config_dir=config_dir)
         encrypted = _newest(work, ".epub", ".pdf")
         # 2. Strip ADEPT DRM in place.

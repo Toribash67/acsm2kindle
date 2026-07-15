@@ -1,0 +1,12 @@
+services:
+  acsm2kindle:
+    build: .
+    container_name: acsm2kindle
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"   # front with nginx-proxy-manager on the tailnet only
