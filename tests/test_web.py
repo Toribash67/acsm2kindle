@@ -56,3 +56,46 @@ def test_library_page_renders(tmp_path):
     client, s, worker = _client(tmp_path)
     assert client.get("/").status_code == 200
     assert client.get("/library").status_code == 200
+
+
+def test_download_returns_file(tmp_path):
+    client, s, worker = _client(tmp_path)
+    epub = os.path.join(s.library_dir, "book.epub")
+    with open(epub, "wb") as f:
+        f.write(b"PK\x03\x04 clean epub")
+    job = worker.store.create("book.acsm")
+    worker.store.update(job.id, status=JobStatus.DONE, epub_path=epub)
+
+    r = client.get(f"/download/{job.id}")
+    assert r.status_code == 200
+    assert r.content == b"PK\x03\x04 clean epub"
+
+
+def test_download_404_when_no_file(tmp_path):
+    client, s, worker = _client(tmp_path)
+    job = worker.store.create("book.acsm")  # no epub_path
+    assert client.get(f"/download/{job.id}").status_code == 404
+    assert client.get("/download/9999").status_code == 404
+
+
+def test_resend_redelivers(tmp_path, monkeypatch):
+    client, s, worker = _client(tmp_path)
+    epub = os.path.join(s.library_dir, "book.epub")
+    with open(epub, "wb") as f:
+        f.write(b"PK\x03\x04 clean epub")
+    job = worker.store.create("book.acsm")
+    worker.store.update(job.id, status=JobStatus.ERROR, epub_path=epub)
+
+    sent = {}
+    monkeypatch.setattr("app.main.deliver", lambda path, settings: sent.setdefault("path", path))
+
+    r = client.post(f"/resend/{job.id}", follow_redirects=False)
+    assert r.status_code == 303
+    assert sent["path"] == epub
+    assert worker.store.get(job.id).status == JobStatus.DONE
+
+
+def test_resend_404_when_no_file(tmp_path):
+    client, s, worker = _client(tmp_path)
+    job = worker.store.create("book.acsm")  # no epub_path
+    assert client.post(f"/resend/{job.id}", follow_redirects=False).status_code == 404

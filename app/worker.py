@@ -1,7 +1,10 @@
 import threading
 import queue
+import logging
 
 from app.pipeline import run_pipeline
+
+logger = logging.getLogger(__name__)
 
 
 class Worker:
@@ -23,5 +26,7 @@ class Worker:
             job_id, source_path = self._q.get()
             try:
                 run_pipeline(job_id, source_path, self.store, self.settings)
+            except Exception:
+                logger.exception("pipeline crashed for job %s", job_id)
             finally:
                 self._q.task_done()

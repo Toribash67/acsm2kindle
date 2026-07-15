@@ -27,10 +27,12 @@ def create_app(settings=None, worker=None) -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     def upload_page(request: Request):
-        return TEMPLATES.TemplateResponse("upload.html", {"request": request})
+        return TEMPLATES.TemplateResponse(request, "upload.html")
 
     @app.post("/upload")
     async def upload(file: UploadFile = File(...)):
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No filename")
         dest = os.path.join(settings.incoming_dir, os.path.basename(file.filename))
         with open(dest, "wb") as f:
             f.write(await file.read())
@@ -43,7 +45,7 @@ def create_app(settings=None, worker=None) -> FastAPI:
 
     @app.get("/library", response_class=HTMLResponse)
     def library(request: Request):
-        return TEMPLATES.TemplateResponse("library.html", {"request": request})
+        return TEMPLATES.TemplateResponse(request, "library.html")
 
     @app.get("/api/jobs")
     def api_jobs():
