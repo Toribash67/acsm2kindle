@@ -33,8 +33,7 @@ Personal-use format-shifting of books you own. Runs behind Tailscale.
 ## Notes on the base image
 
 The Dockerfile pins `bcliang/docker-libgourou:ubuntu` explicitly rather than
-`:latest`. Two things discovered while packaging this (see
-`.superpowers/sdd/task-9-report.md` for the full verification log):
+`:latest`. Two things discovered while packaging this:
 
 - Upstream's `:latest` tag currently resolves to the Alpine build, which has
   no `apt-get` for the `python3` install step below it in the Dockerfile.

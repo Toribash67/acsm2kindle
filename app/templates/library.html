@@ -4,11 +4,12 @@
 table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ddd;padding:.5rem;text-align:left}
 .error{color:#b00}.done{color:#080}</style>
 <script>
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 async function refresh(){
   const r = await fetch('/api/jobs'); const jobs = await r.json();
   const rows = jobs.map(j => `<tr>
-    <td>${j.title || j.source_name}</td>
-    <td class="${j.status}">${j.status}${j.error ? ' — '+j.error : ''}</td>
+    <td>${esc(j.title || j.source_name)}</td>
+    <td class="${j.status}">${esc(j.status)}${j.error ? ' — '+esc(j.error) : ''}</td>
     <td>${j.epub_path ? `<a href="/download/${j.id}">download</a>` : ''}</td>
     <td>${j.epub_path ? `<form method="post" action="/resend/${j.id}"><button>resend</button></form>` : ''}</td>
   </tr>`).join('');

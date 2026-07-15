@@ -3,6 +3,7 @@ import smtplib
 from email.message import EmailMessage
 
 MAX_ATTACHMENT_BYTES = 50 * 1024 * 1024
+SMTP_TIMEOUT = 30
 
 
 class DeliveryError(Exception):
@@ -27,7 +28,7 @@ def deliver(epub_path, settings, smtp_factory=smtplib.SMTP):
             filename=os.path.basename(epub_path),
         )
     try:
-        with smtp_factory(settings.smtp_host, settings.smtp_port) as smtp:
+        with smtp_factory(settings.smtp_host, settings.smtp_port, timeout=SMTP_TIMEOUT) as smtp:
             smtp.starttls()
             smtp.login(settings.smtp_user, settings.smtp_password)
             smtp.send_message(msg)

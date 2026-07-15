@@ -14,8 +14,9 @@ def settings(tmp_path):
 class FakeSMTP:
     instances = []
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, timeout=None):
         self.host, self.port = host, port
+        self.timeout = timeout
         self.started_tls = False
         self.logged_in = None
         self.sent = None
@@ -58,7 +59,7 @@ def test_deliver_wraps_connection_error(tmp_path):
     epub = tmp_path / "book.epub"
     epub.write_bytes(b"PK\x03\x04 content")
 
-    def refusing_factory(host, port):
+    def refusing_factory(host, port, timeout=None):
         raise ConnectionRefusedError("connection refused")
 
     with pytest.raises(delivery.DeliveryError):
