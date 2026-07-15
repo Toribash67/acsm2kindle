@@ -1,4 +1,3 @@
-import os
 import pytest
 from app import delivery
 from app.config import Settings
@@ -55,9 +54,22 @@ def test_deliver_sends_with_attachment(tmp_path):
     assert attachments[0].get_filename() == "book.epub"
 
 
+def test_deliver_wraps_connection_error(tmp_path):
+    epub = tmp_path / "book.epub"
+    epub.write_bytes(b"PK\x03\x04 content")
+
+    def refusing_factory(host, port):
+        raise ConnectionRefusedError("connection refused")
+
+    with pytest.raises(delivery.DeliveryError):
+        delivery.deliver(str(epub), settings(tmp_path), smtp_factory=refusing_factory)
+
+
 def test_deliver_rejects_oversize_file(tmp_path, monkeypatch):
+    FakeSMTP.instances = []
     monkeypatch.setattr(delivery, "MAX_ATTACHMENT_BYTES", 10)
     epub = tmp_path / "big.epub"
     epub.write_bytes(b"0" * 50)
     with pytest.raises(delivery.DeliveryError):
         delivery.deliver(str(epub), settings(tmp_path), smtp_factory=FakeSMTP)
+    assert FakeSMTP.instances == []

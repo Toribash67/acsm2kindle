@@ -31,5 +31,5 @@ def deliver(epub_path, settings, smtp_factory=smtplib.SMTP):
             smtp.starttls()
             smtp.login(settings.smtp_user, settings.smtp_password)
             smtp.send_message(msg)
-    except smtplib.SMTPException as e:
+    except (smtplib.SMTPException, OSError) as e:
         raise DeliveryError(f"SMTP send failed: {e}") from e
