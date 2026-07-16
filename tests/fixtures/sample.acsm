@@ -1,0 +1,5 @@
+<fulfillmentToken xmlns="http://ns.adobe.com/adept" fulfillmentType="buy">
+  <resourceItemInfo>
+    <resource>urn:uuid:00000000-0000-0000-0000-000000000000</resource>
+  </resourceItemInfo>
+</fulfillmentToken>
